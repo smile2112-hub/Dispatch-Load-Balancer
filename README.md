@@ -1,109 +1,63 @@
-# 🚚 Dispatch Load Balancer
+# Dispatch Load Balancer
 
-A Spring Boot REST API that assigns delivery orders to vehicles based on **priority, vehicle capacity, and minimum travel distance** using the **Haversine Formula**.
+A Spring Boot REST API that assigns delivery orders to vehicles by priority, capacity, and the shortest Haversine distance.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-* Java
-* Spring Boot
-* Spring Data JPA / Hibernate
-* MySQL
-* Maven
-* JUnit & Mockito
-* Postman
+- Java 21
+- Spring Boot
+- Spring Validation
+- Maven
+- JUnit and Spring Boot Test
+- Docker
+- Jenkins
 
-## ✨ Features
-
-* Add delivery orders
-* Add fleet/vehicle details
-* Priority-based order assignment (**HIGH → MEDIUM → LOW**)
-* Vehicle capacity validation
-* Haversine-based distance calculation
-* Optimized dispatch plan
-* Input validation and exception handling
-* Unit and service-level testing
-
-## 🔌 APIs
-
-### Add Orders
+## APIs
 
 ```http
 POST /api/dispatch/orders
-```
-
-### Add Vehicles
-
-```http
 POST /api/dispatch/vehicles
+GET  /api/dispatch/plan
 ```
 
-### Get Dispatch Plan
+## Run Locally
 
-```http
-GET /api/dispatch/plan
-```
-
-## ▶️ Run Locally
-
-### 1. Clone the repository
+Prerequisites: JDK 21.
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
-cd dispatch-load-balancer
+./mvnw clean package
+./mvnw spring-boot:run
 ```
 
-### 2. Configure MySQL
+The application runs at `http://localhost:8080`.
 
-Update `application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/dispatch_db
-spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
-
-spring.jpa.hibernate.ddl-auto=update
-```
-
-### 3. Run the application
+## Run with Docker
 
 ```bash
-mvn clean install
-mvn spring-boot:run
+docker build -t dispatch-load-balancer .
+docker run --rm -p 8080:8080 dispatch-load-balancer
 ```
 
-Application:
+## Testing
 
-```text
-http://localhost:8080
+```bash
+./mvnw test
 ```
 
-## 🧪 Testing
+Tests cover order validation, vehicle capacity, priority assignment, distance calculation, unassignable orders, and controller behavior.
 
-APIs can be tested using **Postman**.
+## Jenkins CI/CD Pipeline
 
-Tests cover:
+The root `Jenkinsfile` displays the CI/CD flow in Jenkins:
 
-* Order validation
-* Vehicle capacity
-* Priority assignment
-* Distance calculation
-* Unassignable orders
-* Edge cases
+1. Check out the source code.
+2. Compile the application.
+3. Run the test suite.
+4. Package the executable JAR.
+5. Build a Docker image.
+6. Push the image to a Docker registry for `main` builds.
 
-## 📂 Architecture
+Configure these Jenkins environment variables or credentials:
 
-```text
-Controller
-    ↓
-Service
-    ↓
-Repository
-    ↓
-MySQL
-```
-
-## 👨‍💻 Author
-
-**Mahesh G. Kajale**
-
-PG-DAC | Java Full-Stack Developer
+- `DOCKER_IMAGE`: registry image name, for example `your-user/dispatch-load-balancer`
+- `DOCKER_CREDENTIALS_ID`: Jenkins Docker registry credentials ID
